@@ -1,14 +1,24 @@
-from rest_framework import viewsets
+from rest_framework import viewsets, filters, mixins
 
 from api.serializers import CategorySerializer, GenreSerializer
 from reviews.models import Category, Genre
 
 
-class GenreViewSet(viewsets.ModelViewSet):
+class GenreViewSet(mixins.CreateModelMixin,
+                   mixins.ListModelMixin,
+                   mixins.DestroyModelMixin,
+                   viewsets.GenericViewSet,):
     queryset = Genre.objects.all()
     serializer_class = GenreSerializer
+    filter_backends = (filters.SearchFilter,)
+    search_fields = ('name',)
 
 
-class CategoryViewSet(viewsets.ModelViewSet):
+class CategoryViewSet(mixins.CreateModelMixin,
+                      mixins.ListModelMixin,
+                      mixins.DestroyModelMixin,
+                      viewsets.GenericViewSet,):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
+    filter_backends = (filters.SearchFilter,)
+    search_fields = ('name',)
