@@ -13,7 +13,8 @@ class Category(models.Model):
         help_text='введите название категории'
     )
     slug = models.SlugField(
-        max_length=50, unique=True,
+        max_length=50,
+        unique=True,
         verbose_name='слаг категории',
         help_text='введите слаг категории'
     )
@@ -30,7 +31,8 @@ class Genre(models.Model):
         help_text='ведите название жанра'
     )
     slug = models.SlugField(
-        max_length=50, unique=True,
+        max_length=50,
+        unique=True,
         verbose_name='слаг жанра',
         help_text='введите слаг жанра'
     )
@@ -46,7 +48,7 @@ class Title(models.Model):
         verbose_name='название произведения',
         help_text='введите название рпоизведения'
     )
-    year = models.IntegerField(
+    year = models.PositiveIntegerField(
         verbose_name='год производства',
         help_text='введите год издания'
     )
@@ -78,6 +80,7 @@ class Title(models.Model):
 
 
 class GenreTitle(models.Model):
+    '''Дополнительный класс для связи.'''
     title = models.ForeignKey(
         Title,
         on_delete=models.CASCADE,
@@ -93,10 +96,10 @@ class GenreTitle(models.Model):
 class Review(models.Model):
     '''Модель отзывов'''
     text = models.TextField(
-        help_text='введите текст отзыва',
         verbose_name='текст отзыва',
+        help_text='введите текст отзыва',
     )
-    score = models.PositiveSmallIntegerField(
+    score = models.PositiveIntegerField(
         verbose_name='оценка произведения',
         help_text='поставьте оценку произведению'
     )
@@ -125,4 +128,3 @@ class Review(models.Model):
 
     def __str__(self):
         return self.text
-
