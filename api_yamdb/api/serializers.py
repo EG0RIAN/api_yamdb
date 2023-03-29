@@ -3,9 +3,9 @@ from django.shortcuts import get_object_or_404
 from rest_framework import serializers
 from rest_framework.relations import SlugRelatedField
 
-from .models import Category, Genre, Title
+from reviews.models import Category, Genre, Title
 from .models import Comment, Review
-# поменять на модели    
+# поменять на модели
 
 CustomUser = get_user_model()
 
