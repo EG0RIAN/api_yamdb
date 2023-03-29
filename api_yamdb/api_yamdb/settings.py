@@ -113,6 +113,6 @@ CSV_FILES_DIR = os.path.join(BASE_DIR, 'static/data')
 
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.IsAuthenticated',
+        'rest_framework.permissions.IsAuthenticatedOrReadOnly',
     ],
 }

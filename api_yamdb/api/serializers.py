@@ -19,10 +19,10 @@ class GenreSerializer(serializers.ModelSerializer):
         fields = ('name', 'slug')
 
 
-
 class ReviewSerializer(serializers.ModelSerializer):
     author = serializers.SlugRelatedField(
         read_only=True, slug_field='username')
+
     class Meta:
         model = Review
         fields = '__all__'
@@ -31,9 +31,11 @@ class ReviewSerializer(serializers.ModelSerializer):
 class CommentSerializer(serializers.ModelSerializer):
     author = serializers.SlugRelatedField(
         read_only=True, slug_field='username')
+
     class Meta:
         model = Comment
         fields = '__all__'
+
 
 class TitleGETSerializer(serializers.ModelSerializer):
     '''Сериализатор класса Title при GET запросах.'''
