@@ -1,6 +1,8 @@
+from django.db.models import Avg
+from reviews.models import Review
 from rest_framework import serializers
 
-from reviews.models import Category, Genre, Title
+from reviews.models import Category, Genre, Title, Review, Comment
 
 
 class CategorySerializer(serializers.ModelSerializer):
@@ -16,6 +18,18 @@ class GenreSerializer(serializers.ModelSerializer):
         model = Genre
         fields = ('name', 'slug')
 
+
+
+class ReviewSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Review
+        fields = '__all__'
+
+
+class CommentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Comment
+        fields = '__all__'
 
 class TitleGETSerializer(serializers.ModelSerializer):
     '''Сериализатор класса Title при GET запросах.'''
@@ -63,3 +77,4 @@ class TitleSerializer(serializers.ModelSerializer):
     def to_representation(self, title):
         serializer = TitleGETSerializer(title)
         return serializer.data
+
