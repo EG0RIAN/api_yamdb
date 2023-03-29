@@ -19,7 +19,6 @@ class GenreSerializer(serializers.ModelSerializer):
         fields = ('name', 'slug')
 
 
-
 class ReviewSerializer(serializers.ModelSerializer):
     class Meta:
         model = Review
@@ -30,6 +29,7 @@ class CommentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Comment
         fields = '__all__'
+
 
 class TitleGETSerializer(serializers.ModelSerializer):
     '''Сериализатор класса Title при GET запросах.'''
@@ -77,4 +77,3 @@ class TitleSerializer(serializers.ModelSerializer):
     def to_representation(self, title):
         serializer = TitleGETSerializer(title)
         return serializer.data
-
