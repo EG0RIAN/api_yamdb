@@ -1,7 +1,10 @@
 import csv
+import os
 
 from django.core.management.base import BaseCommand
-from reviews.models import GenreTitle, Category, Genre, Title, User, Review
+
+from reviews.models import GenreTitle, Category, Genre, Title, User
+from api_yamdb.settings import CSV_FILES_DIR
 
 
 def read_csv(path):
@@ -25,10 +28,9 @@ class Command(BaseCommand):
 # flake8: noqa: C901
     def handle(self, *args, **kwargs):
         name = kwargs['name']
-        path = '../api_yamdb/static/data/' + name
+        path = os.path.join(CSV_FILES_DIR, name)
         file_data = read_csv(path)
         data_without_title = file_data[1:]
-        print(data_without_title)
         if name == 'category.csv':
             for data in data_without_title:
                 Category(
@@ -73,7 +75,7 @@ class Command(BaseCommand):
             for data in data_without_title:
                 review_id = Review.objects.get(id=data[1])
                 author = User.objects.get(id=data[3])
-                Comment.objects.create(
+                Comment(
                 id=data[0],
                 review=review_id,
                 text=data[2],
