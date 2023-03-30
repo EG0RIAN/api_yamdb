@@ -1,19 +1,23 @@
 from django.contrib import admin
 
-from .models import User
+from users.models import User
+
 
 @admin.register(User)
 class UserAdmin(admin.ModelAdmin):
     list_display = (
         'pk',
         'username',
+        'email',
         'first_name',
         'last_name',
-        'email',
-        'is_staff',
-        'is_active',
-        'date_joined',
         'bio',
-        'role',
+        'role'
     )
     search_fields = ('username',)
+    list_editable = ('role',)
+    list_display_links = ('username',)
+    empty_value_display = '-пусто-'
+
+    def __str__(self):
+        return self.username[:15]

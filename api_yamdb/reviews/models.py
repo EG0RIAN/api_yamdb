@@ -102,6 +102,17 @@ class Review(models.Model):
         validators=[MinValueValidator(1), MaxValueValidator(10)])
     pub_date = models.DateTimeField(auto_now_add=True)
 
+    class Meta:
+        ordering = ("-pub_date", )
+        constraints = [
+            models.UniqueConstraint(
+                fields=["author", "title"], name="unique_review"
+            )
+        ]
+
+    def __str__(self):
+        return self.text[:15]
+
 
 class Comment(models.Model):
     review = models.ForeignKey(
@@ -110,3 +121,9 @@ class Comment(models.Model):
     author = models.ForeignKey(
         User, on_delete=models.CASCADE, related_name='comments')
     pub_date = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ("-pub_date", )
+
+    def __str__(self):
+        return self.text[:15]

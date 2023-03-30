@@ -192,3 +192,15 @@ class TitleSerializer(serializers.ModelSerializer):
     def to_representation(self, title):
         serializer = TitleGETSerializer(title)
         return serializer.data
+
+
+class ReadTitleSerializer(serializers.ModelSerializer):
+    """Сериализатор Для чтения произведений """
+    description = serializers.CharField(required=False)
+    genre = GenreSerializer(many=True)
+    category = CategorySerializer(required=True)
+    rating = serializers.IntegerField(read_only=True)
+
+    class Meta:
+        model = Title
+        fields = '__all__'
