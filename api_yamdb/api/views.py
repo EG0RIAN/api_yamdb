@@ -8,8 +8,6 @@ from django_filters.rest_framework import DjangoFilterBackend
 from django.conf import settings
 from rest_framework import filters, mixins, permissions, status, viewsets
 from rest_framework.decorators import action
-from rest_framework.mixins import (CreateModelMixin, DestroyModelMixin,
-                                   ListModelMixin)
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet
@@ -20,11 +18,13 @@ from reviews.models import Review
 
 from .filters import TitlesFilter
 from .permissions import (AnonimReadOnlyPermission, IsAdminPermission,
-                          IsAuthorAdminSuperuserOrReadOnlyPermission)
+                          IsAuthorAdminSuperuserOrReadOnlyPermission,
+                          AnonymReadOnlyAdminOther)
 from .serializers import (CategorySerializer, CommentSerializer,
                           CustomUserSerializer, GenreSerializer,
                           ReadTitleSerializer, ReviewSerializer,
-                          SignUpSerializer, TitleSerializer, TokenSerializer)
+                          SignUpSerializer, TitleSerializer, TokenSerializer,
+                          TitleGETSerializer)
 
 
 from django.conf import settings
@@ -41,17 +41,6 @@ class CustomUserViewSet(viewsets.ModelViewSet):
     filter_backends = (filters.SearchFilter,)
     search_fields = ('name',)
 
-
-class GenreViewSet(mixins.CreateModelMixin,
-                   mixins.ListModelMixin,
-                   mixins.DestroyModelMixin,
-                   viewsets.GenericViewSet,):
-    queryset = Genre.objects.all()
-    serializer_class = GenreSerializer
-    permission_classes = (AnonymReadOnlyAdminOther,)
-    filter_backends = (filters.SearchFilter,)
-    search_fields = ('name',)
-    lookup_field = 'slug'
 
 class TokenViewSet(viewsets.GenericViewSet, mixins.CreateModelMixin):
     """Выдача токена user"""
@@ -136,6 +125,8 @@ class CustomUserViewSet(viewsets.ModelViewSet):
             return Response(serializer.data, status=status.HTTP_200_OK)
         serializer = CustomUserSerializer(request.user)
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+
 class CategoryViewSet(mixins.CreateModelMixin,
                       mixins.ListModelMixin,
                       mixins.DestroyModelMixin,
@@ -143,7 +134,19 @@ class CategoryViewSet(mixins.CreateModelMixin,
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
     filter_backends = (filters.SearchFilter,)
-    # permission_classes = (AnonymReadOnlyAdminOther,)
+    permission_classes = (AnonymReadOnlyAdminOther,)
+    search_fields = ('name',)
+    lookup_field = 'slug'
+
+
+class GenreViewSet(mixins.CreateModelMixin,
+                   mixins.ListModelMixin,
+                   mixins.DestroyModelMixin,
+                   viewsets.GenericViewSet,):
+    queryset = Genre.objects.all()
+    serializer_class = GenreSerializer
+    permission_classes = (AnonymReadOnlyAdminOther,)
+    filter_backends = (filters.SearchFilter,)
     search_fields = ('name',)
     lookup_field = 'slug'
 
@@ -177,7 +180,6 @@ class CommentViewSet(viewsets.ModelViewSet):
 class TitleViewSet(viewsets.ModelViewSet):
     queryset = Title.objects.all()
     serializer_class = TitleSerializer
-
     permission_classes = (AnonymReadOnlyAdminOther,)
     filter_backends = (DjangoFilterBackend,)
 
