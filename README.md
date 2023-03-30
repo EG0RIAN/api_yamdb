@@ -75,6 +75,6 @@ POST http://127.0.0.1:8000/api/v1/auth/users/me/
 
 # Над проектом работали
 
-[Архипцев Егор](https://github.com/EG0RIAN)<br>
+[Егор Архипцев](https://github.com/EG0RIAN)<br>
 [Григорий Кононихин](https://github.com/ddk-ops)<br>
 [Роман Демчак](https://github.com/JuniorRF/)
