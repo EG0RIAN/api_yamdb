@@ -86,4 +86,3 @@ class TitleSerializer(serializers.ModelSerializer):
     def to_representation(self, title):
         serializer = TitleGETSerializer(title)
         return serializer.data
-

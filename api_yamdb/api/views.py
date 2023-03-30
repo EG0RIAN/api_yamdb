@@ -7,7 +7,8 @@ from api.serializers import (CategorySerializer, GenreSerializer,
                              TitleSerializer, TitleGETSerializer,
                              CommentSerializer, ReviewSerializer,
                              )
-from api.permissions import AnonymReadOnlyAdminOther
+from api.permissions import (AnonymReadOnlyAdminOther,
+                             ModeratorAuthorAdminSuperUser)
 
 
 class GenreViewSet(mixins.CreateModelMixin,
@@ -36,7 +37,7 @@ class CategoryViewSet(mixins.CreateModelMixin,
 
 class ReviewViewSet(viewsets.ModelViewSet):
     serializer_class = ReviewSerializer
-    # permission_classes = ()
+    permission_classes = (ModeratorAuthorAdminSuperUser,)
 
     def get_queryset(self):
         pk = self.kwargs.get('title_id')
@@ -49,7 +50,7 @@ class ReviewViewSet(viewsets.ModelViewSet):
 
 class CommentViewSet(viewsets.ModelViewSet):
     serializer_class = CommentSerializer
-    # permission_classes = ()
+    permission_classes = (ModeratorAuthorAdminSuperUser,)
 
     def get_queryset(self):
         pk = self.kwargs.get('review_id')
