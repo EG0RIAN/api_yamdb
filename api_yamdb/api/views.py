@@ -1,4 +1,4 @@
-from django.shortcuts import get_object_or_404 
+from django.shortcuts import get_object_or_404
 from rest_framework import viewsets, filters, mixins
 from django_filters.rest_framework import DjangoFilterBackend
 
@@ -30,7 +30,7 @@ class CategoryViewSet(mixins.CreateModelMixin,
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
     filter_backends = (filters.SearchFilter,)
-    permission_classes = (AnonymReadOnlyAdminOther,)
+    # permission_classes = (AnonymReadOnlyAdminOther,)
     search_fields = ('name',)
     lookup_field = 'slug'
 
@@ -59,13 +59,12 @@ class CommentViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
-    lookup_field = 'slug'
 
 
 class TitleViewSet(viewsets.ModelViewSet):
     queryset = Title.objects.all()
     serializer_class = TitleSerializer
-    permission_classes = (AnonymReadOnlyAdminOther,)
+    # permission_classes = (AnonymReadOnlyAdminOther,)
     filter_backends = (DjangoFilterBackend,)
 
     def get_serializer_class(self):

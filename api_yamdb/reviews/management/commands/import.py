@@ -5,6 +5,7 @@ from django.core.management.base import BaseCommand
 
 from reviews.models import (GenreTitle, Category, Genre, Title, User,
                             Review, Comment)
+
 from api_yamdb.settings import CSV_FILES_DIR
 
 
