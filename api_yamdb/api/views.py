@@ -2,7 +2,6 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.tokens import default_token_generator
 from django.core.mail import send_mail
 from django.db import IntegrityError
-from django.db.models import Avg
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
 from django.conf import settings
@@ -12,24 +11,22 @@ from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet
 from rest_framework_simplejwt.tokens import AccessToken
+from django.conf import settings
 
 from reviews.models import Category, Genre, Title
 from reviews.models import Review
 
 # from .filters import TitlesFilter
-from .permissions import (IsAdminPermission)
-
-# AnonimReadOnlyPermission, IsAuthorAdminSuperuserOrReadOnlyPermission, AnonymReadOnlyAdminOther
-
-
+from .permissions import (IsAuthorAdminSuperuserOrReadOnlyPermission,
+                          AnonimReadOnlyPermission,
+                          IsSuperUserOrIsAdminOnly,
+                          IsAdminUserOrReadOnly)
 from .serializers import (CategorySerializer, CommentSerializer,
                           CustomUserSerializer, GenreSerializer,
                           ReviewSerializer,
                           SignUpSerializer, TitleSerializer, TokenSerializer,
                           TitleGETSerializer)
 
-
-from django.conf import settings
 
 CustomUser = get_user_model()
 
@@ -39,7 +36,7 @@ class CustomUserViewSet(viewsets.ModelViewSet):
 
     queryset = CustomUser.objects.all()
     serializer_class = CustomUserSerializer
-    #  = (IsAdminPermission,)
+    permission_classes = (IsSuperUserOrIsAdminOnly,)
     filter_backends = (filters.SearchFilter,)
     search_fields = ('name',)
 
@@ -47,7 +44,7 @@ class CustomUserViewSet(viewsets.ModelViewSet):
 class TokenViewSet(viewsets.GenericViewSet, mixins.CreateModelMixin):
     """Выдача токена user"""
     serializer_class = TokenSerializer
-    #  = (AllowAny,)
+    permissions_class = (AllowAny,)
 
     def create(self, request, *args, **kwargs):
         """JWT token по коду подтверждения."""
@@ -70,7 +67,7 @@ class SignUpViewSet(viewsets.GenericViewSet, mixins.CreateModelMixin):
     """Регистрация нового юзера и отправка письма на почту"""
     serializer_class = SignUpSerializer
     queryset = CustomUser.objects.all()
-    #  = (AllowAny, )
+    permissions_class = (AllowAny,)
 
     def create(self, request, *args, **kwargs):
         """Создание пользователя И Отправка письма с кодом"""
@@ -101,7 +98,7 @@ class CustomUserViewSet(viewsets.ModelViewSet):
 
     queryset = CustomUser.objects.all()
     serializer_class = CustomUserSerializer
-    #  = (IsAdminPermission,)
+    permission_classes = (IsSuperUserOrIsAdminOnly,)
     filter_backends = (filters.SearchFilter,)
     search_fields = ('username',)
     lookup_field = 'username'
@@ -112,7 +109,7 @@ class CustomUserViewSet(viewsets.ModelViewSet):
         methods=['get', 'patch'],
         url_path='me',
         url_name='me',
-        # =(permissions.IsAuthenticated,)
+        permission_classes=(permissions.IsAuthenticated,)
     )
     def get_me_data(self, request):
         """Возможность получения Пользователя данных о себе
@@ -136,7 +133,7 @@ class CategoryViewSet(mixins.CreateModelMixin,
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
     filter_backends = (filters.SearchFilter,)
-    #  = (IsAdminPermission,)
+    permission_class = (IsAdminUserOrReadOnly,)
     search_fields = ('name',)
     lookup_field = 'slug'
 
@@ -147,7 +144,7 @@ class GenreViewSet(mixins.CreateModelMixin,
                    viewsets.GenericViewSet,):
     queryset = Genre.objects.all()
     serializer_class = GenreSerializer
-    #  = (IsAdminPermission,)
+    permission_class = (IsAdminUserOrReadOnly,)
     filter_backends = (filters.SearchFilter,)
     search_fields = ('name',)
     lookup_field = 'slug'
@@ -155,7 +152,10 @@ class GenreViewSet(mixins.CreateModelMixin,
 
 class ReviewViewSet(viewsets.ModelViewSet):
     serializer_class = ReviewSerializer
-    # #  = (IsAdminPermission,)
+    permission_classes = (
+        permissions.IsAuthenticatedOrReadOnly,
+        IsAuthorAdminSuperuserOrReadOnlyPermission
+    )
 
     def get_queryset(self):
         pk = self.kwargs.get('title_id')
@@ -168,7 +168,10 @@ class ReviewViewSet(viewsets.ModelViewSet):
 
 class CommentViewSet(viewsets.ModelViewSet):
     serializer_class = CommentSerializer
-    #  = (IsAdminPermission,)
+    permission_classes = ( 
+        IsAuthorAdminSuperuserOrReadOnlyPermission,
+        permissions.IsAuthenticatedOrReadOnly,
+    )
 
     def get_queryset(self):
         pk = self.kwargs.get('review_id')
@@ -182,7 +185,7 @@ class CommentViewSet(viewsets.ModelViewSet):
 class TitleViewSet(viewsets.ModelViewSet):
     queryset = Title.objects.all()
     serializer_class = TitleSerializer
-    # #  = (IsAdminPermission,)
+    permission_classes = (AnonimReadOnlyPermission | IsSuperUserOrIsAdminOnly)
     filter_backends = (DjangoFilterBackend,)
 
     def get_serializer_class(self):
