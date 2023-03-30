@@ -7,23 +7,19 @@ from api.views import (CategoryViewSet, CommentViewSet, CustomUserViewSet,
 
 app_name = 'api'
 
-router_v1 = routers.DefaultRouter()
+router = DefaultRouter()
 router_v1_auth = routers.DefaultRouter()
-
+router.register('genres', GenreViewSet)
+router.register('categories', CategoryViewSet)
+router.register('titles', TitleViewSet)
+router.register(r'titles/(?P<title_id>\d+)/reviews', ReviewViewSet, basename='review')
+router.register(
+    r'titles/(?P<title_id>\d+)/reviews/(?P<review_id>\d+)/comments',
+    CommentViewSet,
+    basename='comments')
 router_v1_auth.register('signup', SignUpViewSet, basename='signup')
 router_v1_auth.register('token', TokenViewSet, basename='token')
 router_v1.register('users', CustomUserViewSet, basename='users')
-router_v1.register(
-    r'titles/(?P<title_id>\d+)/reviews/(?P<review_id>\d+)/comments',
-    CommentViewSet, basename='comments'
-)
-router_v1.register(
-    r'titles/(?P<title_id>\d+)/reviews', ReviewViewSet, basename='viewsets'
-)
-
-router_v1.register('titles', TitleViewSet, basename='titles')
-router_v1.register('genres', GenreViewSet, basename='genres')
-router_v1.register('categories', CategoryViewSet, basename='categories')
 
 urlpatterns = [
     path('auth/', include(router_v1_auth.urls)),

@@ -1,11 +1,12 @@
+import datetime as dt
+
+from django.db.models import Avg
 from django.contrib.auth import get_user_model
 from django.shortcuts import get_object_or_404
 from rest_framework import serializers
 from rest_framework.relations import SlugRelatedField
 
-from reviews.models import Category, Genre, Title
-from .models import Comment, Review
-# поменять на модели
+from reviews.models import Review, Category, Genre, Title, Comment
 
 CustomUser = get_user_model()
 
@@ -104,23 +105,63 @@ class CommentSerializer(serializers.ModelSerializer):
 
 
 class CategorySerializer(serializers.ModelSerializer):
-    """Сериализатор Для Категорий"""
+    '''Сериализатор класса Category.'''
     class Meta:
         model = Category
-        fields = ('name', 'slug', )
+        fields = ('name', 'slug')
 
 
 class GenreSerializer(serializers.ModelSerializer):
-    """Сериализатор Для жанров"""
+    '''Сериализатор класса Genre.'''
     class Meta:
         model = Genre
-        fields = ('name', 'slug', )
+        fields = ('name', 'slug')
+
+
+class ReviewSerializer(serializers.ModelSerializer):
+    author = serializers.SlugRelatedField(
+        read_only=True, slug_field='username')
+
+    class Meta:
+        model = Review
+        fields = '__all__'
+
+
+class CommentSerializer(serializers.ModelSerializer):
+    author = serializers.SlugRelatedField(
+        read_only=True, slug_field='username')
+
+    class Meta:
+        model = Comment
+        fields = '__all__'
+
+
+class TitleGETSerializer(serializers.ModelSerializer):
+    '''Сериализатор класса Title при GET запросах.'''
+
+    genre = GenreSerializer(many=True, read_only=True)
+    category = CategorySerializer(read_only=True)
+    rating = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Title
+        fields = (
+            'id',
+            'name',
+            'year',
+            'rating',
+            'description',
+            'genre',
+            'category'
+        )
+
+    def get_rating(self, obj):
+        return int(obj.reviews.aggregate(Avg('score'))['score__avg'])
 
 
 class TitleSerializer(serializers.ModelSerializer):
-    """Сериализатор Для произведений"""
+    '''Сериализатор класса Title при остальных запросах.'''
 
-    description = serializers.CharField(required=False)
     genre = serializers.SlugRelatedField(
         slug_field='slug',
         queryset=Genre.objects.all(),
@@ -128,22 +169,26 @@ class TitleSerializer(serializers.ModelSerializer):
     )
     category = serializers.SlugRelatedField(
         slug_field='slug',
-        queryset=Category.objects.all(),
+        queryset=Category.objects.all()
     )
-    rating = serializers.IntegerField(read_only=True)
 
     class Meta:
         model = Title
-        fields = '__all__'
+        fields = (
+            'name',
+            'year',
+            'description',
+            'genre',
+            'category'
+        )
 
+    @staticmethod
+    def validate_year(value):
+        current_year = dt.datetime.now().year
+        if value > current_year:
+            raise serializers.ValidationError('Неправильная дата')
+        return value
 
-class ReadTitleSerializer(serializers.ModelSerializer):
-    """Сериализатор Для чтения произведений """
-    description = serializers.CharField(required=False)
-    genre = GenreSerializer(many=True)
-    category = CategorySerializer(required=True)
-    rating = serializers.IntegerField(read_only=True)
-
-    class Meta:
-        model = Title
-        fields = '__all__'
+    def to_representation(self, title):
+        serializer = TitleGETSerializer(title)
+        return serializer.data
