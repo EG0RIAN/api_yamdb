@@ -16,13 +16,15 @@ from rest_framework_simplejwt.tokens import AccessToken
 from reviews.models import Category, Genre, Title
 from reviews.models import Review
 
-from .filters import TitlesFilter
-from .permissions import (AnonimReadOnlyPermission, IsAdminPermission,
-                          IsAuthorAdminSuperuserOrReadOnlyPermission,
-                          AnonymReadOnlyAdminOther)
+# from .filters import TitlesFilter
+from .permissions import (IsAdminPermission)
+
+# AnonimReadOnlyPermission, IsAuthorAdminSuperuserOrReadOnlyPermission, AnonymReadOnlyAdminOther
+
+
 from .serializers import (CategorySerializer, CommentSerializer,
                           CustomUserSerializer, GenreSerializer,
-                          ReadTitleSerializer, ReviewSerializer,
+                          ReviewSerializer,
                           SignUpSerializer, TitleSerializer, TokenSerializer,
                           TitleGETSerializer)
 
@@ -37,7 +39,7 @@ class CustomUserViewSet(viewsets.ModelViewSet):
 
     queryset = CustomUser.objects.all()
     serializer_class = CustomUserSerializer
-    permission_classes = (IsAdminPermission,)
+    #  = (IsAdminPermission,)
     filter_backends = (filters.SearchFilter,)
     search_fields = ('name',)
 
@@ -45,7 +47,7 @@ class CustomUserViewSet(viewsets.ModelViewSet):
 class TokenViewSet(viewsets.GenericViewSet, mixins.CreateModelMixin):
     """Выдача токена user"""
     serializer_class = TokenSerializer
-    permission_classes = (AllowAny,)
+    #  = (AllowAny,)
 
     def create(self, request, *args, **kwargs):
         """JWT token по коду подтверждения."""
@@ -68,7 +70,7 @@ class SignUpViewSet(viewsets.GenericViewSet, mixins.CreateModelMixin):
     """Регистрация нового юзера и отправка письма на почту"""
     serializer_class = SignUpSerializer
     queryset = CustomUser.objects.all()
-    permission_classes = (AllowAny, )
+    #  = (AllowAny, )
 
     def create(self, request, *args, **kwargs):
         """Создание пользователя И Отправка письма с кодом"""
@@ -99,7 +101,7 @@ class CustomUserViewSet(viewsets.ModelViewSet):
 
     queryset = CustomUser.objects.all()
     serializer_class = CustomUserSerializer
-    permission_classes = (IsAdminPermission,)
+    #  = (IsAdminPermission,)
     filter_backends = (filters.SearchFilter,)
     search_fields = ('username',)
     lookup_field = 'username'
@@ -110,7 +112,7 @@ class CustomUserViewSet(viewsets.ModelViewSet):
         methods=['get', 'patch'],
         url_path='me',
         url_name='me',
-        permission_classes=(permissions.IsAuthenticated,)
+        # =(permissions.IsAuthenticated,)
     )
     def get_me_data(self, request):
         """Возможность получения Пользователя данных о себе
@@ -134,7 +136,7 @@ class CategoryViewSet(mixins.CreateModelMixin,
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
     filter_backends = (filters.SearchFilter,)
-    permission_classes = (AnonymReadOnlyAdminOther,)
+    #  = (IsAdminPermission,)
     search_fields = ('name',)
     lookup_field = 'slug'
 
@@ -145,7 +147,7 @@ class GenreViewSet(mixins.CreateModelMixin,
                    viewsets.GenericViewSet,):
     queryset = Genre.objects.all()
     serializer_class = GenreSerializer
-    permission_classes = (AnonymReadOnlyAdminOther,)
+    #  = (IsAdminPermission,)
     filter_backends = (filters.SearchFilter,)
     search_fields = ('name',)
     lookup_field = 'slug'
@@ -153,7 +155,7 @@ class GenreViewSet(mixins.CreateModelMixin,
 
 class ReviewViewSet(viewsets.ModelViewSet):
     serializer_class = ReviewSerializer
-    permission_classes = (ModeratorAuthorAdminSuperUser,)
+    # #  = (IsAdminPermission,)
 
     def get_queryset(self):
         pk = self.kwargs.get('title_id')
@@ -166,7 +168,7 @@ class ReviewViewSet(viewsets.ModelViewSet):
 
 class CommentViewSet(viewsets.ModelViewSet):
     serializer_class = CommentSerializer
-    permission_classes = (ModeratorAuthorAdminSuperUser,)
+    #  = (IsAdminPermission,)
 
     def get_queryset(self):
         pk = self.kwargs.get('review_id')
@@ -180,7 +182,7 @@ class CommentViewSet(viewsets.ModelViewSet):
 class TitleViewSet(viewsets.ModelViewSet):
     queryset = Title.objects.all()
     serializer_class = TitleSerializer
-    permission_classes = (AnonymReadOnlyAdminOther,)
+    # #  = (IsAdminPermission,)
     filter_backends = (DjangoFilterBackend,)
 
     def get_serializer_class(self):

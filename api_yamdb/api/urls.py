@@ -23,6 +23,6 @@ router_v1_auth.register('token', TokenViewSet, basename='token')
 router.register('users', CustomUserViewSet, basename='users')
 
 urlpatterns = [
-    path('auth/', include(router_v1_auth.urls)),
-    path('', include(router_v1_auth.urls)),
+    path('v1/auth/', include(router_v1_auth.urls)),
+    path('v1/', include(router.urls)),
 ]
