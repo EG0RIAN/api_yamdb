@@ -1,3 +1,5 @@
+import datetime as dt
+
 from django.db.models import Avg
 from reviews.models import Review
 from rest_framework import serializers
@@ -73,6 +75,13 @@ class TitleSerializer(serializers.ModelSerializer):
             'genre',
             'category'
         )
+
+    @staticmethod
+    def validate_year(value):
+        current_year = dt.datetime.now().year
+        if value > current_year:
+            raise serializers.ValidationError('Неправильная дата')
+        return value
 
     def to_representation(self, title):
         serializer = TitleGETSerializer(title)
