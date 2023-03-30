@@ -1,3 +1,8 @@
+
+# api_yamdb
+api_yamdb
+fire!!!!
+=======
 # Проект YaMDb
 
 Проект **YaMDb** собирает отзывы пользователей на произведения. Сами произведения в **YaMDb** не хранятся, здесь нельзя посмотреть фильм или послушать музыку.
@@ -78,3 +83,4 @@ POST http://127.0.0.1:8000/api/v1/auth/users/me/
 [Егор Архипцев](https://github.com/EG0RIAN)<br>
 [Григорий Кононихин](https://github.com/ddk-ops)<br>
 [Роман Демчак](https://github.com/JuniorRF/)
+
