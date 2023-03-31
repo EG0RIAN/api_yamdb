@@ -79,7 +79,7 @@ class SignUpViewSet(viewsets.GenericViewSet, mixins.CreateModelMixin):
         send_mail(
             subject='Код подтверждения',
             message=f'Ваш код подтверждения: {confirmation_code}',
-            from_email=settings.YAMDB_EMAIL,
+            from_email='MAILER-DAEMON@yandex.ru',
             recipient_list=(user.email,),
             fail_silently=False,
         )
