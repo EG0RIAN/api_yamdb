@@ -138,3 +138,4 @@ class Command(BaseCommand):
         for func, func_name in name_func.items():
             if name == func:
                 func_name(file_data)
+
