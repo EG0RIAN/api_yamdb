@@ -27,6 +27,7 @@ class Command(BaseCommand):
             help='Введите название файла для импорта'
         )
 
+# flake8: noqa: C901
     def handle(self, *args, **kwargs):
         name = kwargs['name']
         path = os.path.join(CSV_FILES_DIR, name)
@@ -83,12 +84,12 @@ class Command(BaseCommand):
                 review_id = Review.objects.get(id=data[1])
                 author = User.objects.get(id=data[3])
                 Comment(
-                    id=data[0],
-                    review=review_id,
-                    text=data[2],
-                    author=author,
-                    pub_date=data[4]
-                ).save()
+                id=data[0],
+                review=review_id,
+                text=data[2],
+                author=author,
+                pub_date=data[4]
+            ).save()
 
         if name == 'review.csv':
             for data in data_without_title:
