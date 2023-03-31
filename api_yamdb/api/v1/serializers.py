@@ -7,8 +7,8 @@ from rest_framework import serializers
 from rest_framework.relations import SlugRelatedField
 
 from reviews.models import Review, Category, Genre, Title, Comment
-
-CustomUser = get_user_model()
+from users.models import User
+# CustomUser = get_user_model()
 
 
 class TokenSerializer(serializers.Serializer):
@@ -53,7 +53,7 @@ class CustomUserSerializer(serializers.ModelSerializer):
     """Сериализатор для модели User."""
 
     class Meta:
-        model = CustomUser
+        model = User
         fields = (
             'username', 'email', 'first_name', 'last_name', 'bio', 'role'
         )
@@ -99,9 +99,8 @@ class CommentSerializer(serializers.ModelSerializer):
     )
 
     class Meta:
-        fields = '__all__'
+        fields = fields = ('id', 'text', 'author', 'pub_date')
         model = Comment
-        read_only_fields = ('review',)
 
 
 class CategorySerializer(serializers.ModelSerializer):
@@ -124,16 +123,22 @@ class ReviewSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Review
-        fields = '__all__'
+        fields = (
+            'id',
+            'text',
+            'author',
+            'score',
+            'pub_date',
+        )
 
 
-class CommentSerializer(serializers.ModelSerializer):
-    author = serializers.SlugRelatedField(
-        read_only=True, slug_field='username')
+# class CommentSerializer(serializers.ModelSerializer):
+#     author = serializers.SlugRelatedField(
+#         read_only=True, slug_field='username')
 
-    class Meta:
-        model = Comment
-        fields = '__all__'
+#     class Meta:
+#         model = Comment
+#         fields = '__all__'
 
 
 class TitleGETSerializer(serializers.ModelSerializer):
@@ -141,7 +146,7 @@ class TitleGETSerializer(serializers.ModelSerializer):
 
     genre = GenreSerializer(many=True, read_only=True)
     category = CategorySerializer(read_only=True)
-    rating = serializers.SerializerMethodField()
+    # rating = serializers.SerializerMethodField()
 
     class Meta:
         model = Title
@@ -149,14 +154,14 @@ class TitleGETSerializer(serializers.ModelSerializer):
             'id',
             'name',
             'year',
-            'rating',
+            # 'rating',
             'description',
             'genre',
             'category'
         )
 
-    def get_rating(self, obj):
-        return int(obj.reviews.aggregate(Avg('score'))['score__avg'])
+    # def get_rating(self, obj):
+    #     return int(obj.reviews.aggregate(Avg('score'))['score__avg'])
 
 
 class TitleSerializer(serializers.ModelSerializer):

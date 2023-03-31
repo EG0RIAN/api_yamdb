@@ -1,4 +1,4 @@
-from django.contrib.auth import get_user_model
+# from django.contrib.auth import get_user_model
 from django.contrib.auth.tokens import default_token_generator
 from django.core.mail import send_mail
 from django.db import IntegrityError
@@ -17,10 +17,12 @@ from rest_framework_simplejwt.tokens import AccessToken
 
 from reviews.models import Category, Genre, Title
 from reviews.models import Review
+from users.models import User
 
 from .filters import TitlesFilter
 from .permissions import (AnonimReadOnlyPermission, IsAdminPermission,
-                          IsAuthorAdminSuperuserOrReadOnlyPermission)
+                          IsAuthorAdminSuperuserOrReadOnlyPermission,
+                          NewPermission)
 from .serializers import (CategorySerializer, CommentSerializer,
                           CustomUserSerializer, GenreSerializer,
                           ReadTitleSerializer, ReviewSerializer,
@@ -29,7 +31,7 @@ from .serializers import (CategorySerializer, CommentSerializer,
 
 from django.conf import settings
 
-CustomUser = get_user_model()
+# CustomUser = get_user_model()
 
 
 class TokenViewSet(viewsets.GenericViewSet, mixins.CreateModelMixin):
@@ -45,7 +47,7 @@ class TokenViewSet(viewsets.GenericViewSet, mixins.CreateModelMixin):
         username = serializer.validated_data.get('username')
         confirmation_code = serializer.validated_data.get('confirmation_code')
 
-        user = get_object_or_404(CustomUser, username=username)
+        user = get_object_or_404(User, username=username)
 
         if not default_token_generator.check_token(user, confirmation_code):
             message = {'confirmation_code': 'Код подтверждения невалиден'}
@@ -57,7 +59,7 @@ class TokenViewSet(viewsets.GenericViewSet, mixins.CreateModelMixin):
 class SignUpViewSet(viewsets.GenericViewSet, mixins.CreateModelMixin):
     """Регистрация нового юзера и отправка письма на почту"""
     serializer_class = SignUpSerializer
-    queryset = CustomUser.objects.all()
+    queryset = User.objects.all()
     permission_classes = (AllowAny, )
 
     def create(self, request, *args, **kwargs):
@@ -65,7 +67,7 @@ class SignUpViewSet(viewsets.GenericViewSet, mixins.CreateModelMixin):
         serializer = SignUpSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         try:
-            user, _ = CustomUser.objects.get_or_create(
+            user, _ = User.objects.get_or_create(
                 **serializer.validated_data)
         except IntegrityError:
             return Response(
@@ -87,7 +89,7 @@ class SignUpViewSet(viewsets.GenericViewSet, mixins.CreateModelMixin):
 class CustomUserViewSet(viewsets.ModelViewSet):
     """Вьюсет для обьектов модели User."""
 
-    queryset = CustomUser.objects.all()
+    queryset = User.objects.all()
     serializer_class = CustomUserSerializer
     permission_classes = (IsAdminPermission,)
     filter_backends = (filters.SearchFilter,)
@@ -120,6 +122,7 @@ class CustomUserViewSet(viewsets.ModelViewSet):
 class ReviewViewSet(viewsets.ModelViewSet):
     """Вьюсет для Оставления Отзывов"""
     serializer_class = ReviewSerializer
+    # permission_classes = (NewPermission,)
     permission_classes = [
         IsAuthorAdminSuperuserOrReadOnlyPermission,
         permissions.IsAuthenticatedOrReadOnly
