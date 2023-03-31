@@ -33,6 +33,7 @@ class Command(BaseCommand):
         path = os.path.join(CSV_FILES_DIR, name)
         file_data = read_csv(path)
         data_without_title = file_data[1:]
+
         if name == 'category.csv':
             for data in data_without_title:
                 Category(
@@ -40,6 +41,7 @@ class Command(BaseCommand):
                     name=data[1],
                     slug=data[2]
                 ).save()
+
         if name == 'genre.csv':
             for data in data_without_title:
                 Genre(
@@ -47,6 +49,7 @@ class Command(BaseCommand):
                     name=data[1],
                     slug=data[2]
                 ).save()
+
         if name == 'titles.csv':
             for data in data_without_title:
                 Title(
@@ -55,6 +58,7 @@ class Command(BaseCommand):
                     year=data[2],
                     category=Category.objects.get(id=data[3])
                 ).save()
+
         if name == 'genre_title.csv':
             for data in data_without_title:
                 GenreTitle(
@@ -62,6 +66,7 @@ class Command(BaseCommand):
                     title_id=Title.objects.get(id=data[1]).id,
                     genre_id=Genre.objects.get(id=data[2]).id
                 ).save()
+
         if name == 'users.csv':
             for data in data_without_title:
                 User(
@@ -73,6 +78,7 @@ class Command(BaseCommand):
                     first_name=data[5],
                     last_name=data[6],
                 ).save()
+
         if name == 'comments.csv':
             for data in data_without_title:
                 review_id = Review.objects.get(id=data[1])
@@ -84,6 +90,7 @@ class Command(BaseCommand):
                 author=author,
                 pub_date=data[4]
             ).save()
+
         if name == 'review.csv':
             for data in data_without_title:
                 Review(
