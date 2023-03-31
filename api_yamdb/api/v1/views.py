@@ -27,11 +27,6 @@ from .serializers import (CategorySerializer, CommentSerializer,
                           SignUpSerializer, TitleSerializer, TokenSerializer)
 
 
-from django.conf import settings
-
-# CustomUser = get_user_model()
-
-
 class TokenViewSet(viewsets.GenericViewSet, mixins.CreateModelMixin):
     """Выдача токена юзеру"""
     serializer_class = TokenSerializer
