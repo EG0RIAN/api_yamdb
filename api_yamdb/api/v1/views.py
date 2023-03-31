@@ -1,4 +1,3 @@
-# from django.contrib.auth import get_user_model
 from django.contrib.auth.tokens import default_token_generator
 from django.core.mail import send_mail
 from django.db import IntegrityError
@@ -26,6 +25,9 @@ from .serializers import (CategorySerializer, CommentSerializer,
                           CustomUserSerializer, GenreSerializer,
                           ReadTitleSerializer, ReviewSerializer,
                           SignUpSerializer, TitleSerializer, TokenSerializer)
+
+
+from django.conf import settings
 
 # CustomUser = get_user_model()
 
@@ -118,7 +120,6 @@ class CustomUserViewSet(viewsets.ModelViewSet):
 class ReviewViewSet(viewsets.ModelViewSet):
     """Вьюсет для Оставления Отзывов"""
     serializer_class = ReviewSerializer
-    # permission_classes = (NewPermission,)
     permission_classes = [
         IsAuthorAdminSuperuserOrReadOnlyPermission,
         permissions.IsAuthenticatedOrReadOnly
