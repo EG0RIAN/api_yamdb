@@ -29,7 +29,7 @@ class GenreTitleAdmin(admin.ModelAdmin):
 @admin.register(Review)
 class ReviewAdmin(admin.ModelAdmin):
     list_display = ('title', 'text', 'author', 'score', 'pub_date')
-    search_fields = ('title', 'text' )
+    search_fields = ('title', 'text')
 
 
 @admin.register(Comment)
