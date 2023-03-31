@@ -1,11 +1,9 @@
-# from django.contrib.auth import get_user_model
 from django.contrib.auth.tokens import default_token_generator
 from django.core.mail import send_mail
 from django.db import IntegrityError
 from django.db.models import Avg
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
-from django.conf import settings
 from rest_framework import filters, mixins, permissions, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.mixins import (CreateModelMixin, DestroyModelMixin,
@@ -22,16 +20,11 @@ from users.models import User
 from .filters import TitlesFilter
 from .permissions import (AnonimReadOnlyPermission, IsAdminPermission,
                           IsAuthorAdminSuperuserOrReadOnlyPermission,
-                          NewPermission)
+                          )
 from .serializers import (CategorySerializer, CommentSerializer,
                           CustomUserSerializer, GenreSerializer,
                           ReadTitleSerializer, ReviewSerializer,
                           SignUpSerializer, TitleSerializer, TokenSerializer)
-
-
-from django.conf import settings
-
-# CustomUser = get_user_model()
 
 
 class TokenViewSet(viewsets.GenericViewSet, mixins.CreateModelMixin):
@@ -122,7 +115,6 @@ class CustomUserViewSet(viewsets.ModelViewSet):
 class ReviewViewSet(viewsets.ModelViewSet):
     """Вьюсет для Оставления Отзывов"""
     serializer_class = ReviewSerializer
-    # permission_classes = (NewPermission,)
     permission_classes = [
         IsAuthorAdminSuperuserOrReadOnlyPermission,
         permissions.IsAuthenticatedOrReadOnly
