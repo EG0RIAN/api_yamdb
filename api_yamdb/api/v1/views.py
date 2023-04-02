@@ -161,14 +161,11 @@ class TitleViewSet(viewsets.ModelViewSet):
     )
     filter_backends = (DjangoFilterBackend, )
     filterset_class = TitlesFilter
-    lookup_field = ('id')
 
     def get_serializer_class(self):
-        serializer_class = TitleSerializer
         if self.request.method == 'GET':
-            serializer_class = ReadTitleSerializer
-            return serializer_class
-        return serializer_class
+            return ReadTitleSerializer
+        return TitleSerializer
 
 
 class CategoryViewSet(

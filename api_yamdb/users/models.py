@@ -37,6 +37,8 @@ class User(AbstractUser):
     )
     confirmation_code = models.CharField(
         max_length=100,
+        blank=True,
+        null=True,
     )
     bio = models.TextField(
         verbose_name='Биография',
