@@ -10,6 +10,7 @@ class Category(models.Model):
     '''Модель типа произведения.'''
     name = models.CharField(
         max_length=256,
+        unique=True,
         verbose_name='название категории',
         help_text='введите название категории'
     )
@@ -28,6 +29,7 @@ class Genre(models.Model):
     '''Модель жанров.'''
     name = models.CharField(
         max_length=256,
+        unique=True,
         verbose_name='название жанра',
         help_text='ведите название жанра'
     )
