@@ -12,7 +12,7 @@ User = get_user_model()
 
 
 class TokenSerializer(serializers.Serializer):
-    """Сериализатор для выдачи пользователю Токена"""
+    """Сериализатор для выдачи пользователю Токена."""
     username = serializers.RegexField(
         regex=r'^[\w.@+-]+$',
         max_length=150,
@@ -25,7 +25,7 @@ class TokenSerializer(serializers.Serializer):
 
 
 class SignUpSerializer(serializers.Serializer):
-    """Сериализатор для регистрации"""
+    """Сериализатор для регистрации."""
     username = serializers.RegexField(
         regex=r'^[\w.@+-]+$',
         max_length=150,
@@ -41,7 +41,7 @@ class SignUpSerializer(serializers.Serializer):
         fields = ('username', 'email', )
 
     def validate(self, data):
-        """Запрет на имя me, А так же Уникальность полей username и email"""
+        """Запрет на имя me, А так же Уникальность полей username и email."""
         if data.get('username').lower() == 'me':
             raise serializers.ValidationError(
                 'Использовать имя me запрещено'
@@ -67,7 +67,7 @@ class CustomUserSerializer(serializers.ModelSerializer):
 
 
 class CommentSerializer(serializers.ModelSerializer):
-    """Сериализатор Для Комментариев"""
+    """Сериализатор Для Комментариев."""
     author = SlugRelatedField(
         read_only=True, slug_field='username'
     )
@@ -78,14 +78,14 @@ class CommentSerializer(serializers.ModelSerializer):
 
 
 class CategorySerializer(serializers.ModelSerializer):
-    '''Сериализатор класса Category.'''
+    """Сериализатор класса Category."""
     class Meta:
         model = Category
         fields = ('name', 'slug')
 
 
 class GenreSerializer(serializers.ModelSerializer):
-    '''Сериализатор класса Genre.'''
+    """Сериализатор класса Genre."""
     class Meta:
         model = Genre
         fields = ('name', 'slug')
@@ -102,18 +102,19 @@ class ReviewSerializer(serializers.ModelSerializer):
     )
 
     def validate_score(self, value):
-        if 0 > value > 10:
+        if 0 > value or value > 10:
             raise serializers.ValidationError('Оценка по 10-бальной шкале!')
         return value
 
     def validate(self, data):
         request = self.context['request']
-        author = request.user
+        current_user = request.user
         title_id = self.context.get('view').kwargs.get('title_id')
         title = get_object_or_404(Title, pk=title_id)
         if (
             request.method == 'POST'
-            and Review.objects.filter(title=title, author=author).exists()
+            and Review.objects.filter(title=title,
+                                      author=current_user).exists()
         ):
             raise ValidationError('Может существовать только один отзыв!')
         return data
@@ -122,26 +123,9 @@ class ReviewSerializer(serializers.ModelSerializer):
         fields = '__all__'
         model = Review
 
-    def validate_score(self, value):
-        if 1 > value > 10:
-            raise serializers.ValidationError('Недопустимое значение!')
-        return value
-
-    def validate(self, data):
-        request = self.context['request']
-        author = request.user
-        title_id = self.context.get('view').kwargs.get('title_id')
-        title = get_object_or_404(Title, pk=title_id)
-        if (
-            request.method == 'POST'
-            and Review.objects.filter(title=title, author=author).exists()
-        ):
-            raise ValidationError('Может существовать только один отзыв!')
-        return data
-
 
 class TitleGETSerializer(serializers.ModelSerializer):
-    '''Сериализатор класса Title при GET запросах.'''
+    """Сериализатор класса Title при GET запросах."""
 
     genre = GenreSerializer(many=True, read_only=True)
     category = CategorySerializer(read_only=True)
@@ -159,7 +143,7 @@ class TitleGETSerializer(serializers.ModelSerializer):
 
 
 class TitleSerializer(serializers.ModelSerializer):
-    '''Сериализатор класса Title при остальных запросах.'''
+    """Сериализатор класса Title при остальных запросах."""
 
     genre = serializers.SlugRelatedField(
         slug_field='slug',
@@ -194,7 +178,7 @@ class TitleSerializer(serializers.ModelSerializer):
 
 
 class ReadTitleSerializer(serializers.ModelSerializer):
-    """Сериализатор Для чтения произведений """
+    """Сериализатор Для чтения произведений."""
     description = serializers.CharField(required=False)
     genre = GenreSerializer(many=True)
     category = CategorySerializer(required=True)

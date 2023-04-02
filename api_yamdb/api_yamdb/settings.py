@@ -119,3 +119,5 @@ SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(hours=1),
     'AUTH_HEADER_TYPES': ('Bearer',),
 }
+
+SENDER_EMAIL = "MAILER-DAEMON@yandex.ru"

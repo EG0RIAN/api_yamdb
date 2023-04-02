@@ -35,6 +35,9 @@ class User(AbstractUser):
         verbose_name='Фамилия',
         blank=True
     )
+    confirmation_code = models.CharField(
+        max_length=100,
+    )
     bio = models.TextField(
         verbose_name='Биография',
         blank=True

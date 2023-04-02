@@ -8,7 +8,7 @@ User = get_user_model()
 
 
 class Category(models.Model):
-    '''Модель типа произведения.'''
+    """Модель типа произведения."""
     name = models.CharField(
         max_length=256,
         unique=True,
@@ -27,7 +27,7 @@ class Category(models.Model):
 
 
 class Genre(models.Model):
-    '''Модель жанров.'''
+    """Модель жанров."""
     name = models.CharField(
         max_length=256,
         unique=True,
@@ -46,7 +46,7 @@ class Genre(models.Model):
 
 
 class Title(models.Model):
-    '''Модель произведения.'''
+    """Модель произведения."""
     name = models.CharField(
         max_length=256,
         verbose_name='название произведения',
@@ -85,7 +85,7 @@ class Title(models.Model):
 
 
 class GenreTitle(models.Model):
-    '''Дополнительный класс для связи.'''
+    """Дополнительный класс для связи."""
     title = models.ForeignKey(
         Title,
         on_delete=models.CASCADE,
