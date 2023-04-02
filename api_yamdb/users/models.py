@@ -7,9 +7,9 @@ class User(AbstractUser):
     """Класс кастомных пользователей."""
 
     class Roles(models.TextChoices):
-        USER = 'user'
-        MODERATOR = 'moderator'
-        ADMIN = 'admin'
+        USER = 'user', 'User'
+        MODERATOR = 'moderator', 'Moderator'
+        ADMIN = 'admin', 'Admin'
 
     username = models.CharField(
         max_length=150,
@@ -44,15 +44,3 @@ class User(AbstractUser):
         choices=Roles.choices,
         default=Roles.USER
     )
-
-    @property
-    def is_user(self):
-        return self.role == self.Roles.USER
-
-    @property
-    def is_admin(self):
-        return self.role == self.Roles.ADMIN or self.is_superuser
-
-    @property
-    def is_moderator(self):
-        return self.role == self.Roles.MODERATOR
