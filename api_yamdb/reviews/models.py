@@ -2,6 +2,7 @@ from django.db import models
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.contrib.auth import get_user_model
 
+from .validators import validate_year
 
 User = get_user_model()
 
@@ -10,8 +11,9 @@ class Category(models.Model):
     '''Модель типа произведения.'''
     name = models.CharField(
         max_length=256,
+        unique=True,
         verbose_name='название категории',
-        help_text='введите название категории'
+        help_text='введите название категории',    
     )
     slug = models.SlugField(
         max_length=50,
@@ -28,6 +30,7 @@ class Genre(models.Model):
     '''Модель жанров.'''
     name = models.CharField(
         max_length=256,
+        unique=True,
         verbose_name='название жанра',
         help_text='ведите название жанра'
     )
@@ -51,7 +54,8 @@ class Title(models.Model):
     )
     year = models.PositiveIntegerField(
         verbose_name='год производства',
-        help_text='введите год издания'
+        help_text='введите год издания',
+        validators=[validate_year]
     )
     description = models.TextField(
         null=True,
