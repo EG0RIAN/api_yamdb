@@ -13,7 +13,7 @@ class Category(models.Model):
         max_length=256,
         unique=True,
         verbose_name='название категории',
-        help_text='введите название категории',    
+        help_text='введите название категории',
     )
     slug = models.SlugField(
         max_length=50,
