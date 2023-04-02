@@ -1,5 +1,6 @@
 from django.contrib.auth.tokens import default_token_generator
 from django.core.mail import send_mail
+from django.conf import settings
 from django.db import IntegrityError
 from django.db.models import Avg
 from django.shortcuts import get_object_or_404
@@ -17,7 +18,7 @@ from django.contrib.auth import get_user_model
 from reviews.models import Category, Genre, Title
 from reviews.models import Review
 from .filters import TitlesFilter
-from .permissions import (AnonimReadOnlyPermission, IsAdminPermission,
+from .permissions import (IsAdminUserOrReadOnly, IsAdminPermission,
                           IsAuthorAdminSuperuserOrReadOnlyPermission,
                           )
 from .serializers import (CategorySerializer, CommentSerializer,
@@ -29,7 +30,7 @@ User = get_user_model()
 
 
 class TokenViewSet(viewsets.GenericViewSet, mixins.CreateModelMixin):
-    """Выдача токена юзеру"""
+    """Выдача токена юзеру."""
     serializer_class = TokenSerializer
     permission_classes = (AllowAny,)
 
@@ -51,13 +52,13 @@ class TokenViewSet(viewsets.GenericViewSet, mixins.CreateModelMixin):
 
 
 class SignUpViewSet(viewsets.GenericViewSet, mixins.CreateModelMixin):
-    """Регистрация нового юзера и отправка письма на почту"""
+    """Регистрация нового юзера и отправка письма на почту."""
     serializer_class = SignUpSerializer
     queryset = User.objects.all()
     permission_classes = (AllowAny, )
 
     def create(self, request, *args, **kwargs):
-        """Создание пользователя И Отправка письма с кодом"""
+        """Создание пользователя И Отправка письма с кодом."""
         serializer = SignUpSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         try:
@@ -73,7 +74,7 @@ class SignUpViewSet(viewsets.GenericViewSet, mixins.CreateModelMixin):
         send_mail(
             subject='Код подтверждения',
             message=f'Ваш код подтверждения: {confirmation_code}',
-            from_email='MAILER-DAEMON@yandex.ru',
+            from_email=settings.SENDER_EMAIL,
             recipient_list=(user.email,),
             fail_silently=False,
         )
@@ -100,7 +101,7 @@ class CustomUserViewSet(viewsets.ModelViewSet):
     )
     def get_me_data(self, request):
         """Возможность получения Пользователя данных о себе
-        GET и PATCH запросы"""
+        GET и PATCH запросы."""
         if request.method == 'PATCH':
             serializer = CustomUserSerializer(
                 request.user, data=request.data,
@@ -114,12 +115,12 @@ class CustomUserViewSet(viewsets.ModelViewSet):
 
 
 class ReviewViewSet(viewsets.ModelViewSet):
-    """Вьюсет для Оставления Отзывов"""
+    """Вьюсет для Оставления Отзывов."""
     serializer_class = ReviewSerializer
-    permission_classes = [
+    permission_classes = (
         IsAuthorAdminSuperuserOrReadOnlyPermission,
         permissions.IsAuthenticatedOrReadOnly
-    ]
+    )
 
     def get_queryset(self):
         title = get_object_or_404(Title, id=self.kwargs.get('title_id'))
@@ -131,12 +132,12 @@ class ReviewViewSet(viewsets.ModelViewSet):
 
 
 class CommentViewSet(viewsets.ModelViewSet):
-    """Вьюсет для Оставления комментариев"""
+    """Вьюсет для Оставления комментариев."""
     serializer_class = CommentSerializer
-    permission_classes = [
+    permission_classes = (
         IsAuthorAdminSuperuserOrReadOnlyPermission,
         permissions.IsAuthenticatedOrReadOnly
-    ]
+    )
 
     def get_queryset(self):
         review = get_object_or_404(Review,
@@ -152,22 +153,16 @@ class CommentViewSet(viewsets.ModelViewSet):
 
 
 class TitleViewSet(viewsets.ModelViewSet):
-    """Вьюсет для Добавления произведений"""
+    """Вьюсет для Добавления произведений."""
     queryset = Title.objects.annotate(rating=Avg('reviews__score'))
-    permission_classes = (
-        AnonimReadOnlyPermission
-        | IsAdminPermission,
-    )
+    permission_classes = (IsAdminUserOrReadOnly,)
     filter_backends = (DjangoFilterBackend, )
     filterset_class = TitlesFilter
-    lookup_field = ('id')
 
     def get_serializer_class(self):
-        serializer_class = TitleSerializer
         if self.request.method == 'GET':
-            serializer_class = ReadTitleSerializer
-            return serializer_class
-        return serializer_class
+            return ReadTitleSerializer
+        return TitleSerializer
 
 
 class CategoryViewSet(
@@ -176,13 +171,10 @@ class CategoryViewSet(
     GenericViewSet,
     DestroyModelMixin
 ):
-    """Вьюсет для взаимодействия с Категориями"""
+    """Вьюсет для взаимодействия с Категориями."""
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
-    permission_classes = (
-        AnonimReadOnlyPermission
-        | IsAdminPermission,
-    )
+    permission_classes = (IsAdminUserOrReadOnly,)
     filter_backends = (filters.SearchFilter,)
     search_fields = ('name',)
     lookup_field = ('slug')
@@ -194,13 +186,10 @@ class GenreViewSet(
     GenericViewSet,
     DestroyModelMixin
 ):
-    """Вьюсет для взаимодействия с жанрами"""
+    """Вьюсет для взаимодействия с жанрами."""
     queryset = Genre.objects.all()
     serializer_class = GenreSerializer
-    permission_classes = (
-        AnonimReadOnlyPermission
-        | IsAdminPermission,
-    )
+    permission_classes = (IsAdminUserOrReadOnly,)
     filter_backends = (filters.SearchFilter,)
     search_fields = ('name',)
     lookup_field = 'slug'
