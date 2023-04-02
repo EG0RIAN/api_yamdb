@@ -18,7 +18,7 @@ from django.contrib.auth import get_user_model
 from reviews.models import Category, Genre, Title
 from reviews.models import Review
 from .filters import TitlesFilter
-from .permissions import (AnonimReadOnlyPermission, IsAdminPermission,
+from .permissions import (IsAdminUserOrReadOnly, IsAdminPermission,
                           IsAuthorAdminSuperuserOrReadOnlyPermission,
                           )
 from .serializers import (CategorySerializer, CommentSerializer,
@@ -117,10 +117,10 @@ class CustomUserViewSet(viewsets.ModelViewSet):
 class ReviewViewSet(viewsets.ModelViewSet):
     """Вьюсет для Оставления Отзывов."""
     serializer_class = ReviewSerializer
-    permission_classes = [
+    permission_classes = (
         IsAuthorAdminSuperuserOrReadOnlyPermission,
         permissions.IsAuthenticatedOrReadOnly
-    ]
+    )
 
     def get_queryset(self):
         title = get_object_or_404(Title, id=self.kwargs.get('title_id'))
@@ -134,10 +134,10 @@ class ReviewViewSet(viewsets.ModelViewSet):
 class CommentViewSet(viewsets.ModelViewSet):
     """Вьюсет для Оставления комментариев."""
     serializer_class = CommentSerializer
-    permission_classes = [
+    permission_classes = (
         IsAuthorAdminSuperuserOrReadOnlyPermission,
         permissions.IsAuthenticatedOrReadOnly
-    ]
+    )
 
     def get_queryset(self):
         review = get_object_or_404(Review,
@@ -155,10 +155,7 @@ class CommentViewSet(viewsets.ModelViewSet):
 class TitleViewSet(viewsets.ModelViewSet):
     """Вьюсет для Добавления произведений."""
     queryset = Title.objects.annotate(rating=Avg('reviews__score'))
-    permission_classes = (
-        AnonimReadOnlyPermission
-        | IsAdminPermission,
-    )
+    permission_classes = (IsAdminUserOrReadOnly,)
     filter_backends = (DjangoFilterBackend, )
     filterset_class = TitlesFilter
 
@@ -177,10 +174,7 @@ class CategoryViewSet(
     """Вьюсет для взаимодействия с Категориями."""
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
-    permission_classes = (
-        AnonimReadOnlyPermission
-        | IsAdminPermission,
-    )
+    permission_classes = (IsAdminUserOrReadOnly,)
     filter_backends = (filters.SearchFilter,)
     search_fields = ('name',)
     lookup_field = ('slug')
@@ -195,10 +189,7 @@ class GenreViewSet(
     """Вьюсет для взаимодействия с жанрами."""
     queryset = Genre.objects.all()
     serializer_class = GenreSerializer
-    permission_classes = (
-        AnonimReadOnlyPermission
-        | IsAdminPermission,
-    )
+    permission_classes = (IsAdminUserOrReadOnly,)
     filter_backends = (filters.SearchFilter,)
     search_fields = ('name',)
     lookup_field = 'slug'

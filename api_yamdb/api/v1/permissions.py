@@ -2,11 +2,10 @@ from rest_framework import permissions
 from rest_framework.permissions import BasePermission
 
 
-class AnonimReadOnlyPermission(permissions.BasePermission):
-    message = 'Разрешает анонимному пользователю только безопасные запросы.'
-
+class IsAdminUserOrReadOnly(BasePermission):
     def has_permission(self, request, view):
-        return request.method in permissions.SAFE_METHODS
+        return (request.method in permissions.SAFE_METHODS
+                or request.user.is_authenticated and request.user.is_admin)
 
 
 class IsAuthorAdminSuperuserOrReadOnlyPermission(permissions.BasePermission):
@@ -25,20 +24,6 @@ class IsAuthorAdminSuperuserOrReadOnlyPermission(permissions.BasePermission):
                 or request.user.is_moderator
                 or obj.author == request.user
             )
-        )
-
-
-class IsSuperUserOrIsAdminOnly(permissions.BasePermission):
-    message = (
-        'Проверка на запросы, только от администрации.'
-    )
-
-    def has_permission(self, request, view):
-        return (
-            request.user.is_authenticated
-            and (request.user.is_superuser
-                 or request.user.is_staff
-                 or request.user.is_admin)
         )
 
 
