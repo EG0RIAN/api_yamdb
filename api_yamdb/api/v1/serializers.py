@@ -4,9 +4,11 @@ from django.core.exceptions import ValidationError
 from django.shortcuts import get_object_or_404
 from rest_framework import serializers
 from rest_framework.relations import SlugRelatedField
+from django.contrib.auth import get_user_model
 
 from reviews.models import Review, Category, Genre, Title, Comment
-from users.models import User
+
+User = get_user_model()
 
 
 class TokenSerializer(serializers.Serializer):

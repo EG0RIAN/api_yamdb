@@ -1,12 +1,15 @@
 import csv
 import os
+import logging
 
 from django.core.management.base import BaseCommand
+from django.conf import settings
 
 from reviews.models import (GenreTitle, Category, Genre, Title, User,
                             Review, Comment)
 
-from api_yamdb.settings import CSV_FILES_DIR
+
+logging.basicConfig(level=logging.INFO)
 
 
 def read_csv(path):
@@ -14,7 +17,7 @@ def read_csv(path):
         with open(path, encoding='utf-8') as f:
             return list(csv.reader(f))
     except FileNotFoundError:
-        print('Файл не найден.')
+        logging.warning('Файл не найден.')
 
 
 def read_category(incoming_data):
@@ -99,17 +102,6 @@ def read_reviews(incoming_data):
         ).save()
 
 
-class Command(BaseCommand):
-    help = 'Импорт данных из csv файлов'
-
-    def add_arguments(self, parser):
-        parser.add_argument(
-            'name',
-            type=str,
-            help='Введите название файла для импорта'
-        )
-
-
 name_func = {
     'category.csv': read_category,
     'genre.csv': read_genre,
@@ -127,13 +119,12 @@ class Command(BaseCommand):
     def add_arguments(self, parser):
         parser.add_argument(
             'name',
-            type=str,
             help='Введите название файла для импорта'
         )
 
     def handle(self, *args, **kwargs):
         name = kwargs['name']
-        path = os.path.join(CSV_FILES_DIR, name)
+        path = os.path.join(settings.CSV_FILES_DIR, name)
         file_data = read_csv(path)
         for func, func_name in name_func.items():
             if name == func:
