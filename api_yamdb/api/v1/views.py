@@ -70,6 +70,8 @@ class SignUpViewSet(viewsets.GenericViewSet, mixins.CreateModelMixin):
                 status=status.HTTP_400_BAD_REQUEST
             )
         confirmation_code = default_token_generator.make_token(user)
+        user.confirmation_code = confirmation_code
+        user.save()
 
         send_mail(
             subject='Код подтверждения',
