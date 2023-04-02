@@ -25,7 +25,6 @@ from .serializers import (CategorySerializer, CommentSerializer,
                           ReadTitleSerializer, ReviewSerializer,
                           SignUpSerializer, TitleSerializer, TokenSerializer)
 
-
 User = get_user_model()
 
 

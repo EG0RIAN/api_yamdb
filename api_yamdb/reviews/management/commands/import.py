@@ -4,9 +4,12 @@ import logging
 
 from django.core.management.base import BaseCommand
 from django.conf import settings
+from django.contrib.auth import get_user_model
 
-from reviews.models import (GenreTitle, Category, Genre, Title, User,
+from reviews.models import (GenreTitle, Category, Genre, Title,
                             Review, Comment)
+
+User = get_user_model()
 
 
 logging.basicConfig(level=logging.INFO)
