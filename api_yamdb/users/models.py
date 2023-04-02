@@ -44,3 +44,11 @@ class User(AbstractUser):
         choices=Roles.choices,
         default=Roles.USER
     )
+
+    @property
+    def is_admin(self):
+        return self.role == self.Roles.ADMIN or self.is_staff
+
+    @property
+    def is_moderator(self):
+        return self.role == self.Roles.MODERATOR
