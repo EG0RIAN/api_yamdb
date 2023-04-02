@@ -12,11 +12,10 @@ from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet
 from rest_framework_simplejwt.tokens import AccessToken
+from django.contrib.auth import get_user_model
 
 from reviews.models import Category, Genre, Title
 from reviews.models import Review
-from users.models import User
-
 from .filters import TitlesFilter
 from .permissions import (AnonimReadOnlyPermission, IsAdminPermission,
                           IsAuthorAdminSuperuserOrReadOnlyPermission,
@@ -25,6 +24,9 @@ from .serializers import (CategorySerializer, CommentSerializer,
                           CustomUserSerializer, GenreSerializer,
                           ReadTitleSerializer, ReviewSerializer,
                           SignUpSerializer, TitleSerializer, TokenSerializer)
+
+
+User = get_user_model()
 
 
 class TokenViewSet(viewsets.GenericViewSet, mixins.CreateModelMixin):
