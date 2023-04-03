@@ -165,13 +165,14 @@ class TitleSerializer(serializers.ModelSerializer):
             'category'
         )
 
-    def validate_year(value):
-        current_year = dt.datetime.now().year
-        if value > current_year:
-            raise serializers.ValidationError(
-                'Неправильная дата: год не может быть больше текущего.'
-            )
-        return value
+    class ValidateYear:
+        def validate_year(value):
+            current_year = dt.datetime.now().year
+            if value > current_year:
+                raise serializers.ValidationError(
+                    'Неправильная дата: год не может быть больше текущего.'
+                )
+            return value
 
     def to_representation(self, title):
         serializer = TitleGETSerializer(title)
